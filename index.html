@@ -256,6 +256,42 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:56px 5
 .disclaimer{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:.74rem;color:var(--text-muted);line-height:1.7;margin-bottom:24px;}
 .disclaimer strong{color:var(--gold-light);}
 
+/* ══ LIVE NEWS FEED ══ */
+#news-feed{background:var(--dark2);}
+.news-source-tabs{display:flex;gap:10px;margin-top:44px;margin-bottom:32px;flex-wrap:wrap;}
+.news-tab{display:flex;align-items:center;gap:8px;padding:9px 20px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.82rem;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .25s;}
+.news-tab:hover{border-color:rgba(107,111,232,.3);color:#A0A4FF;background:rgba(107,111,232,.08);}
+.news-tab.active{background:rgba(107,111,232,.12);border-color:rgba(107,111,232,.4);color:#fff;}
+.news-tab .src-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.news-tab.active .src-dot{box-shadow:0 0 8px currentColor;}
+.news-panel{display:none;}.news-panel.active{display:block;}
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.news-card{background:var(--dark3);border:1px solid var(--border);border-radius:14px;padding:22px;text-decoration:none;display:block;color:inherit;transition:all .3s;position:relative;overflow:hidden;}
+.news-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ism-blue),var(--ism-green));transform:scaleX(0);transition:transform .3s;transform-origin:left;}
+.news-card:hover{border-color:rgba(107,111,232,.35);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.3);}
+.news-card:hover::before{transform:scaleX(1);}
+.news-card-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
+.news-source-badge{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+.badge-mint{background:rgba(107,111,232,.12);color:#A0A4FF;border:1px solid rgba(107,111,232,.2);}
+.badge-bt{background:rgba(201,147,58,.12);color:var(--gold-light);border:1px solid rgba(201,147,58,.2);}
+.badge-et{background:rgba(30,201,154,.12);color:var(--ism-green);border:1px solid rgba(30,201,154,.2);}
+.news-date{font-size:.7rem;color:var(--text-muted);font-family:var(--font-mono);}
+.news-title{font-family:var(--font-display);font-size:1rem;font-weight:700;line-height:1.38;margin-bottom:8px;}
+.news-desc{font-size:.82rem;color:var(--text-muted);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.news-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+.news-read{font-size:.75rem;color:var(--ism-blue);font-weight:600;display:flex;align-items:center;gap:4px;}
+.news-ext{font-size:.68rem;color:var(--text-muted);}
+/* loading & error states */
+.news-loading{display:flex;align-items:center;justify-content:center;gap:12px;padding:60px 0;color:var(--text-muted);}
+.news-spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--ism-blue);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.news-error{text-align:center;padding:48px 20px;color:var(--text-muted);}
+.news-error strong{display:block;color:var(--text);font-size:1rem;margin-bottom:8px;}
+.news-error a{color:var(--ism-blue);text-decoration:none;}
+.news-all-btn{display:flex;justify-content:center;margin-top:32px;}
+@media(max-width:860px){.news-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.news-grid{grid-template-columns:1fr;}.news-source-tabs{gap:8px;}}
+
 /* ══ MOBILE ══ */
 @media(max-width:1100px){.hero-visual{display:none;}.services-grid{grid-template-columns:1fr 1fr;}.footer-grid{grid-template-columns:1fr 1fr;gap:32px;}.edu-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:860px){.nav-links{display:none;}.hamburger{display:flex;}.about-grid{grid-template-columns:1fr;gap:40px;}.illus-float{top:-10px;right:-6px;}.insights-layout{grid-template-columns:1fr;}.contact-grid{grid-template-columns:1fr;gap:36px;}.blog-grid{grid-template-columns:1fr 1fr;}section{padding:70px 5%;}}
@@ -274,6 +310,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:56px 5
   <a href="#markets" onclick="closeMobileMenu()">Markets</a>
   <a href="#education" onclick="closeMobileMenu()">Learn</a>
   <a href="#blog" onclick="closeMobileMenu()">Blog</a>
+  <a href="#news-feed" onclick="closeMobileMenu()">News</a>
   <a href="#contact" class="m-cta" onclick="closeMobileMenu()">Contact Us</a>
 </div>
 
@@ -295,6 +332,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:56px 5
     <li><a href="#about">About</a></li><li><a href="#services">Services</a></li>
     <li><a href="#market-insights">Insights</a></li><li><a href="#markets">Markets</a></li>
     <li><a href="#education">Learn</a></li><li><a href="#blog">Blog</a></li>
+    <li><a href="#news-feed">News</a></li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
   </ul>
   <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></div>
@@ -637,6 +675,45 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:56px 5
   </div>
 </section>
 
+<!-- LIVE NEWS FEED -->
+<section id="news-feed">
+  <div class="section-label anim anim-left">Live News Feed</div>
+  <h2 class="anim anim-up d1">Latest <em>Market News</em></h2>
+  <p class="section-desc anim anim-up d2">Real-time headlines from India's top financial publications — click any story to read the full article on the original source.</p>
+
+  <div class="news-source-tabs anim anim-up d3">
+    <button class="news-tab active" onclick="switchNews('mint',this)">
+      <span class="src-dot" style="background:#6B6FE8;color:#6B6FE8"></span> Livemint
+    </button>
+    <button class="news-tab" onclick="switchNews('bt',this)">
+      <span class="src-dot" style="background:#C9933A;color:#C9933A"></span> Business Today
+    </button>
+    <button class="news-tab" onclick="switchNews('et',this)">
+      <span class="src-dot" style="background:#1EC99A;color:#1EC99A"></span> Economic Times
+    </button>
+    <button class="news-tab" onclick="switchNews('all',this)">
+      <span class="src-dot" style="background:#E8EAF0;color:#E8EAF0"></span> All Sources
+    </button>
+  </div>
+
+  <div id="news-mint" class="news-panel active anim anim-up d4">
+    <div class="news-loading"><div class="news-spinner"></div> Loading Livemint headlines…</div>
+  </div>
+  <div id="news-bt" class="news-panel">
+    <div class="news-loading"><div class="news-spinner"></div> Loading Business Today headlines…</div>
+  </div>
+  <div id="news-et" class="news-panel">
+    <div class="news-loading"><div class="news-spinner"></div> Loading Economic Times headlines…</div>
+  </div>
+  <div id="news-all" class="news-panel">
+    <div class="news-loading"><div class="news-spinner"></div> Loading all headlines…</div>
+  </div>
+
+  <div class="news-all-btn anim anim-up d5">
+    <a id="news-source-link" href="https://www.livemint.com/" target="_blank" rel="noopener" class="btn-ghost">View All on Livemint →</a>
+  </div>
+</section>
+
 <!-- NEWSLETTER -->
 <div class="newsletter-section">
   <div class="newsletter-inner anim anim-scale">
@@ -661,7 +738,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:56px 5
       <p>We're a team of analysts, educators, and market enthusiasts passionate about bringing world-class financial intelligence to every Indian investor and beyond.</p>
       <div class="contact-items">
         <div class="contact-item"><div class="contact-item-icon">📍</div><div><div class="contact-item-label">Location</div><div class="contact-item-val">Mumbai, Maharashtra, India</div></div></div>
-        <div class="contact-item"><div class="contact-item-icon">✉️</div><div><div class="contact-item-label">Email</div><div class="contact-item-val">hello@ismdu.com</div></div></div>
+        <div class="contact-item"><div class="contact-item-icon">✉️</div><div><div class="contact-item-label">Email</div><div class="contact-item-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f79f929b9b98b79e849a9382d994989a">[email&#160;protected]</a></div></div></div>
         <div class="contact-item"><div class="contact-item-icon">📞</div><div><div class="contact-item-label">Phone</div><div class="contact-item-val">+91 98765 43210</div></div></div>
         <div class="contact-item"><div class="contact-item-icon">🕐</div><div><div class="contact-item-label">Hours</div><div class="contact-item-val">Mon – Fri, 9:00 AM – 6:00 PM IST</div></div></div>
       </div>
@@ -717,7 +794,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:56px 5
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* MOBILE MENU */
 function toggleMobileMenu(){const m=document.getElementById('mobileMenu'),b=document.getElementById('hamburger');m.classList.toggle('open');b.classList.toggle('open');document.body.style.overflow=m.classList.contains('open')?'hidden':'';}
 function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open');document.body.style.overflow='';}
@@ -757,10 +834,4 @@ const sObs=new IntersectionObserver(entries=>{
 },{threshold:.5});
 const st=document.querySelector('.hero-stats');if(st)sObs.observe(st);
 
-/* floatBadge keyframe for SVG elements */
-const style=document.createElement('style');
-style.textContent='@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}';
-document.head.appendChild(style);
-</script>
-</body>
-</html>
+/* floatBadge keyframe for SVG
