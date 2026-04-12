@@ -19,13 +19,14 @@ body{background:var(--dark);color:var(--text);font-family:var(--font-body);font-
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--dark);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
 
 /* ══ ANIMATION SYSTEM ══ */
-.anim{opacity:0;will-change:opacity,transform;}
-.anim-up{transform:translateY(44px);}
-.anim-left{transform:translateX(-50px);}
-.anim-right{transform:translateX(50px);}
-.anim-scale{transform:scale(0.88);}
-.anim-rotate{transform:rotate(-8deg) scale(0.9);}
-.anim.in{opacity:1!important;transform:none!important;transition:opacity 0.75s cubic-bezier(.22,1,.36,1),transform 0.75s cubic-bezier(.22,1,.36,1);}
+/* Elements are VISIBLE by default — JS adds animation class only if supported */
+.anim-ready .anim{opacity:0;will-change:opacity,transform;}
+.anim-ready .anim-up{transform:translateY(44px);}
+.anim-ready .anim-left{transform:translateX(-50px);}
+.anim-ready .anim-right{transform:translateX(50px);}
+.anim-ready .anim-scale{transform:scale(0.88);}
+.anim-ready .anim-rotate{transform:rotate(-8deg) scale(0.9);}
+.anim-ready .anim.in{opacity:1!important;transform:none!important;transition:opacity 0.75s cubic-bezier(.22,1,.36,1),transform 0.75s cubic-bezier(.22,1,.36,1);}
 .d1{transition-delay:0.08s!important;}.d2{transition-delay:0.16s!important;}.d3{transition-delay:0.24s!important;}
 .d4{transition-delay:0.32s!important;}.d5{transition-delay:0.40s!important;}.d6{transition-delay:0.50s!important;}.d7{transition-delay:0.60s!important;}
 
@@ -794,7 +795,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:56px 5
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* MOBILE MENU */
 function toggleMobileMenu(){const m=document.getElementById('mobileMenu'),b=document.getElementById('hamburger');m.classList.toggle('open');b.classList.toggle('open');document.body.style.overflow=m.classList.contains('open')?'hidden':'';}
 function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open');document.body.style.overflow='';}
@@ -802,11 +803,29 @@ function closeMobileMenu(){document.getElementById('mobileMenu').classList.remov
 /* NAV SCROLL */
 window.addEventListener('scroll',()=>document.getElementById('mainNav').classList.toggle('scrolled',scrollY>50));
 
-/* UNIVERSAL SCROLL REVEAL */
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
-},{threshold:0.10,rootMargin:'0px 0px -30px 0px'});
-document.querySelectorAll('.anim').forEach(el=>io.observe(el));
+/* UNIVERSAL SCROLL REVEAL — safe, content always visible */
+(function(){
+  // Only activate animations if IntersectionObserver is supported
+  if(!('IntersectionObserver' in window)) return;
+  // Add class to body so CSS hides elements
+  document.body.classList.add('anim-ready');
+  const io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -20px 0px'});
+  // Observe all anim elements
+  document.querySelectorAll('.anim').forEach(function(el){ io.observe(el); });
+  // Safety fallback — after 2s make everything visible regardless
+  setTimeout(function(){
+    document.querySelectorAll('.anim:not(.in)').forEach(function(el){
+      el.classList.add('in');
+    });
+  }, 2000);
+})();
 
 /* TABS */
 document.querySelectorAll('.tab').forEach(t=>{
@@ -833,5 +852,47 @@ const sObs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('[data-count]').forEach(el=>animCount(el,+el.dataset.count,el.dataset.suffix||''));sObs.unobserve(e.target);}});
 },{threshold:.5});
 const st=document.querySelector('.hero-stats');if(st)sObs.observe(st);
+
+/* ═══ LIVE NEWS RSS FEED ═══ */
+const RSS_PROXY='https://api.rss2json.com/v1/api.json?rss_url=';
+const FEEDS={
+  mint:{url:'https://www.livemint.com/rss/markets',label:'Livemint',badgeClass:'badge-mint',siteUrl:'https://www.livemint.com/'},
+  bt:{url:'https://www.businesstoday.in/rssfeeds/1712058.cms',label:'Business Today',badgeClass:'badge-bt',siteUrl:'https://www.businesstoday.in/'},
+  et:{url:'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms',label:'Economic Times',badgeClass:'badge-et',siteUrl:'https://economictimes.indiatimes.com/'}
+};
+const newsCache={};
+function timeAgo(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<1)return'Just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+function stripHtml(h){const t=document.createElement('div');t.innerHTML=h||'';return(t.textContent||t.innerText||'').trim();}
+function newsCard(item,feedKey){
+  const f=FEEDS[feedKey],title=item.title||'No title',desc=stripHtml(item.description||item.content||'').replace(/\[.*?\]/g,'').slice(0,160),link=item.link||f.siteUrl,date=item.pubDate?timeAgo(item.pubDate):'';
+  return`<a href="${link}" target="_blank" rel="noopener" class="news-card"><div class="news-card-meta"><span class="news-source-badge ${f.badgeClass}">${f.label}</span><span class="news-date">${date}</span></div><div class="news-title">${title}</div><div class="news-desc">${desc}</div><div class="news-footer"><span class="news-read">Read Full Article →</span><span class="news-ext">↗ ${f.label}</span></div></a>`;
+}
+async function fetchFeed(key){
+  if(newsCache[key])return newsCache[key];
+  try{const r=await fetch(`${RSS_PROXY}${encodeURIComponent(FEEDS[key].url)}&count=10`),d=await r.json();if(d.status==='ok'&&d.items){newsCache[key]=d.items;return d.items;}}catch(e){}return[];
+}
+function animCards(panel){panel.querySelectorAll('.news-card').forEach((el,i)=>{el.style.cssText='opacity:0;transform:translateY(20px);transition:opacity .5s '+i*.07+'s ease,transform .5s '+i*.07+'s ease';setTimeout(()=>{el.style.opacity='1';el.style.transform='none';},60);});}
+async function loadNewsPanel(key){
+  const panel=document.getElementById('news-'+key);if(!panel)return;
+  if(key==='all'){
+    const[a,b,c]=await Promise.all([fetchFeed('mint'),fetchFeed('bt'),fetchFeed('et')]);
+    const all=[...a.map(i=>({...i,_src:'mint'})),...b.map(i=>({...i,_src:'bt'})),...c.map(i=>({...i,_src:'et'}))].sort((x,y)=>new Date(y.pubDate)-new Date(x.pubDate));
+    panel.innerHTML=all.length?`<div class="news-grid">${all.slice(0,9).map(i=>newsCard(i,i._src)).join('')}</div>`:`<div class="news-error"><strong>Could not load news</strong>Please check your connection.</div>`;
+  }else{
+    const items=await fetchFeed(key);
+    panel.innerHTML=items.length?`<div class="news-grid">${items.slice(0,6).map(i=>newsCard(i,key)).join('')}</div>`:`<div class="news-error"><strong>Could not load from ${FEEDS[key].label}</strong><br>Visit <a href="${FEEDS[key].siteUrl}" target="_blank">${FEEDS[key].siteUrl}</a> directly.</div>`;
+  }
+  animCards(panel);
+}
+function switchNews(key,btn){
+  document.querySelectorAll('.news-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
+  document.querySelectorAll('.news-panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById('news-'+key);if(panel)panel.classList.add('active');
+  const lb=document.getElementById('news-source-link');
+  if(key==='all'){lb.href='https://www.livemint.com/';lb.textContent='View All Sources →';}
+  else{lb.href=FEEDS[key].siteUrl;lb.textContent='View All on '+FEEDS[key].label+' →';}
+  if(!newsCache[key])loadNewsPanel(key);
+}
+document.addEventListener('DOMContentLoaded',()=>loadNewsPanel('mint'));
 
 /* floatBadge keyframe for SVG
